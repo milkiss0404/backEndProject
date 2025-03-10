@@ -40,7 +40,7 @@ public class AccountService {
     private void sendSignUpConfirmEmail(Account newAccount) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setSubject("회원 가입인증");
-        mailMessage.setText("/check-mail-token?token="+ newAccount.getEmailCheckToken() + "&email="+ newAccount.getEmail());
+        mailMessage.setText("/check-email-token?token="+ newAccount.getEmailCheckToken() + "&email="+ newAccount.getEmail());
         javaMailSender.send(mailMessage);
     }
 
