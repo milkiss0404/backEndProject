@@ -55,4 +55,9 @@ public class Account {
     public void generateEmailCheckToken(){
         this.emailCheckToken = UUID.randomUUID().toString();  //여기서 this 는 account 객체 겠죠? 이정도 센스는 있어야지
     }
+
+    public void completeSignUp() {
+        this.eamilVerified = true;
+        this.joinAt = LocalDateTime.now();
+    }
 }
