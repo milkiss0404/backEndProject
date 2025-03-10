@@ -43,7 +43,8 @@ public class AccountController {
         return "redirect:/";
     }
 
-    @GetMapping("check-email-token")
+
+    @GetMapping("/check-email-token")
     public String checkEmailToken(String token, String email, Model model) {
         Account account = accountRepository.findByEmail(email);
         String view = "account/checked-email";
