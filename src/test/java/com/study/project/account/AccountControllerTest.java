@@ -6,12 +6,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.View;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.*;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -48,17 +52,16 @@ class AccountControllerTest {
                 .build();
 
         accountRepository.save(account);
-
         account.generateEmailCheckToken();
 
-
         mockMvc.perform(get("/check-email-token")
-                .param("email", account.getEmail())
-                .param("token", account.getEmailCheckToken()))
+                        .param("email", account.getEmail())
+                        .param("token", account.getEmailCheckToken()))
                 .andExpect(model().attributeDoesNotExist("error"))
                 .andExpect(model().attributeExists("numberOfUser"))
                 .andExpect(model().attributeExists("nickname"))
                 .andExpect(view().name("account/checked-email"));
+//                .andExpect(authenticated().withUsername("우철")); 로그인이 내부에있는데 authentication을 못찾는 오류
     }
 
     @DisplayName("회원가입 화면 보이는지 테스트")
@@ -67,7 +70,7 @@ class AccountControllerTest {
         mockMvc.perform(get("/sign-up"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("account/sign-up"))
-                .andExpect(model().attributeExists("signUpFrom"));
+                .andExpect(model().attributeExists("signUpForm"));
     }
 
     @DisplayName("회원 가입 처리 -입력값 오류")
@@ -85,6 +88,6 @@ class AccountControllerTest {
 
         Account account = accountRepository.findByEmail("dsadsa@dsadsa.com");
         assertNotNull(account);
-        assertNotEquals(account.getPassword(),"12dasdad3");
+        assertNotEquals("12dasdad3", account.getPassword());
     }
 }

@@ -60,4 +60,7 @@ public class Account {
         this.eamilVerified = true;
         this.joinAt = LocalDateTime.now();
     }
+    public boolean isValidToken(String token){
+     return this.emailCheckToken.equals(token);
+    };
 }

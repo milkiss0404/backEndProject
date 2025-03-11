@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+
+### NPM MODULE###
+src/main/resources/static/node_modules
