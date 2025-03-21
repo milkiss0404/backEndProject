@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="fragments.html :: head"></head>
+<body class="bg-light">
+<div th:replace="fragments.html :: main-nav"></div>
+    <div class="container">
+        <div class="row mt-5 justify-content-center">
+            <div class="col-2">
+                <svg th:if="${#strings.isEmpty(account.profileImage)}" class="img-fluid float-left rounded img-thumbnail"
+                 th:data-jdenticon-value="${account.nickname}" width="125" height="125"></svg>
+<!--                denticon은 문자열을 입력하면 해당 문자열에 기반한 고유한 아이콘(아바타)을 생성하는 라이브러리야.-->
+<!--                `예를 들어, "user123"과 "admin456"을 넣으면 서로 다른 아이콘이 생성됨.-->
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

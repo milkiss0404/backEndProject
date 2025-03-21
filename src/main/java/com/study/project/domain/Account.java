@@ -11,7 +11,8 @@ import java.util.UUID;
 @Getter @Setter @EqualsAndHashCode(of = "id")
 @Builder @AllArgsConstructor @NoArgsConstructor
 public class Account {
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     private Long id;
 
     @Column(unique = true)
@@ -22,7 +23,7 @@ public class Account {
 
     private String password;
 
-    private boolean eamilVerified; //이메일 계정이 인증계정인지 아닌지 판별
+    private boolean emailVerified; //이메일 계정이 인증계정인지 아닌지 판별
 
     private String emailCheckToken; //이메일 검증한 토큰값?
 
@@ -36,7 +37,8 @@ public class Account {
 
     private String location;
 
-    @Lob @Basic(fetch = FetchType.EAGER) //프로필 이미지를 떄마다 가져오려고 했다고함
+    @Lob
+    @Basic(fetch = FetchType.EAGER) //프로필 이미지를 떄마다 가져오려고 했다고함
     private String profileImage;
 
     private boolean studyCreatedByEmail; //스터디가 만들어진걸 이메일로 받을것인가
@@ -51,16 +53,23 @@ public class Account {
 
     private boolean studyUpdatedByWeb; //스터디의 갱신된 정보들을 웹로받을것인가
 
+    private LocalDateTime emailCheckTokenGeneratedAt;
 
-    public void generateEmailCheckToken(){
+    public void generateEmailCheckToken() {
         this.emailCheckToken = UUID.randomUUID().toString();  //여기서 this 는 account 객체 겠죠? 이정도 센스는 있어야지
+        this.emailCheckTokenGeneratedAt = LocalDateTime.now();
     }
 
     public void completeSignUp() {
-        this.eamilVerified = true;
+        this.emailVerified = true;
         this.joinAt = LocalDateTime.now();
     }
-    public boolean isValidToken(String token){
-     return this.emailCheckToken.equals(token);
-    };
+
+    public boolean isValidToken(String token) {
+        return this.emailCheckToken.equals(token);
+    }
+
+    public boolean canSendConfirmEmail() {
+        return this.emailCheckTokenGeneratedAt.isBefore(LocalDateTime.now().minusHours(1));
+    }
 }

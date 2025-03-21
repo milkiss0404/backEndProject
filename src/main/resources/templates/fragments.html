@@ -50,11 +50,13 @@
         Action
       </button>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="#">Action</a></li>
-        <li><a class="dropdown-item" href="#">Another action</a></li>
-        <li><a class="dropdown-item" href="#">Something else here</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="#">Separated link</a></li>
+        <a class="dropdown-item" th:href="@{'/profile/' + ${#authentication.name}}">프로필</a>
+        <a class="dropdown-item" >스터디</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="#" th:href="@{'/settings/profile'}">설정</a>
+        <form class="form-inline my-2 my-lg-0" action="#" th:action="@{/logout}" method="post">
+          <button class="dropdown-item" type="submit">로그아웃</button>
+        </form>
       </ul>
     </div>
 
@@ -63,5 +65,34 @@
 </nav>
 
 
+<script type="application/javascript" th:fragment="form-validation">
+  (function () {
+    'use strict';
+
+    window.addEventListener('load', function () {
+      // Fetch all the forms we want to apply custom Bootstrap validation styles to
+      var forms = document.getElementsByClassName('needs-validation');
+
+      // Loop over them and prevent submission
+      Array.prototype.filter.call(forms, function (form) {
+        form.addEventListener('submit', function (event) {
+          if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+          form.classList.add('was-validated');
+        }, false);
+      });
+    }, false);
+  })();
+</script>
+
+
+<footer th:fragment="footer">
+  <div class="row justify-content-center">
+    <i class="fa-solid fa-thumbs-up"></i>
+    <small class="d-block mb-3 text-muted">&copy; 2020</small>
+  </div>
+</footer>
 
 </html>
