@@ -1,6 +1,7 @@
 package com.study.project.account;
 
 import com.study.project.domain.Account;
+import com.study.project.settings.Profile;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
@@ -19,12 +20,12 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AccountService implements UserDetailsService {
     private final AccountRepository accountRepository;
     private final JavaMailSender javaMailSender;
     private final PasswordEncoder passwordEncoder;
 
-    @Transactional
     public Account processNewAccount(@Valid SignUpForm signUpForm) {
         Account newAccount = saveNewAccount(signUpForm); //여기까지 영속성 컨텍스트랑 붙어있음
         newAccount.generateEmailCheckToken(); //Detached 상태임 여기의 newAccount 는
@@ -52,7 +53,7 @@ public class AccountService implements UserDetailsService {
         mailMessage.setText("/check-email-token?token="+ newAccount.getEmailCheckToken() + "&email="+ newAccount.getEmail());
         javaMailSender.send(mailMessage);
     }
-
+    @Transactional(readOnly = true)
     public void login(Account account) {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                 new UserAccount(account), // principal 은 UserDetail 의 구현체 여야함, principal 은 첫번쨰 파라미터임
@@ -73,4 +74,16 @@ public class AccountService implements UserDetailsService {
         return new UserAccount(account);//principal 에 해당하는 객체를 넘기면 됨!!
     }
 
+    public void completeSignUp(Account account) {
+        account.completeSignUp();
+        login(account);
+    }
+
+    public void updateProfile(Account account, @Valid Profile profile) {
+        account.setUrl(profile.getUrl());
+        account.setOccupation(profile.getOccupation());
+        account.setLocation(profile.getLocation());
+        account.setBio(profile.getBio());
+        accountRepository.save(account); // Detached 상태로받아왔기때문에 save 해줘야함
+    }
 }

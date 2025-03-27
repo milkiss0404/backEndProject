@@ -3,7 +3,6 @@ package com.study.project.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -27,7 +26,7 @@ public class Account {
 
     private String emailCheckToken; //이메일 검증한 토큰값?
 
-    private LocalDateTime joinAt;
+    private LocalDateTime joinedAt;
 
     private String bio; //자기소개
 
@@ -62,7 +61,7 @@ public class Account {
 
     public void completeSignUp() {
         this.emailVerified = true;
-        this.joinAt = LocalDateTime.now();
+        this.joinedAt = LocalDateTime.now();
     }
 
     public boolean isValidToken(String token) {
@@ -70,6 +69,6 @@ public class Account {
     }
 
     public boolean canSendConfirmEmail() {
-        return this.emailCheckTokenGeneratedAt.isBefore(LocalDateTime.now().minusHours(1));
+        return this.emailCheckTokenGeneratedAt.isBefore(LocalDateTime.now().minusSeconds(1));
     }
 }
