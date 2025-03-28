@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -35,6 +36,9 @@ public class Account {
     private String occupation; //하는일
 
     private String location;
+
+    @ManyToMany
+    private Set<Tag> tags;
 
     @Lob
     @Basic(fetch = FetchType.EAGER) //프로필 이미지를 떄마다 가져오려고 했다고함

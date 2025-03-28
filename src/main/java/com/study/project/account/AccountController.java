@@ -1,5 +1,7 @@
 package com.study.project.account;
 
+import com.study.project.account.form.SignUpForm;
+import com.study.project.account.validator.SignUpFormValidator;
 import com.study.project.domain.Account;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,8 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-
-import java.time.LocalDateTime;
 
 @Controller
 @RequiredArgsConstructor
