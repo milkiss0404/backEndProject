@@ -9,6 +9,9 @@
   <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <link rel="stylesheet" href="/node_modules/font-awesome/css/font-awesome.min.css">
   <script src="/node_modules/jdenticon/dist/jdenticon.min.js"></script>
+  <link rel="stylesheet" href="/node_modules/@yaireo/tagify/dist/tagify.css">
+  <link href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:300,400,500&display=swap" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 
@@ -105,7 +108,60 @@
   <a class="list-group-item list-group-item-action list-group-item-danger" th:classappend="${currentMenu == 'account'}? active" href="#" th:href="@{/settings/account}">계정</a>
 </div>
 
+<div th:fragment="update-tags (baseUrl)">
+  <script src="/node_modules/@yaireo/tagify/dist/tagify.js"></script>
+  <script type="application/javascript" th:inline="javascript">
+    $(function() {
+      function tagRequest(url, tagTitle) {
+        $.ajax({
+          dataType: "json",
+          autocomplete: {
+            enabled: true,
+            rightKey: true,
+          },
+          contentType: "application/json; charset=utf-8",
+          method: "POST",
+          url: "[(${baseUrl})]" + url,
+          data: JSON.stringify({'tagTitle': tagTitle})
+        }).done(function (data, status) {
+          console.log("${data} and status is ${status}");
+        });
+      }
 
+      function onAdd(e) {
+        tagRequest("/add", e.detail.data.value);
+      }
+
+      function onRemove(e) {
+        tagRequest("/remove", e.detail.data.value);
+      }
+
+      var tagInput = document.querySelector("#tags");
+      var tagify = new Tagify(tagInput, {
+        pattern: /^.{0,20}$/,
+        whitelist: JSON.parse(document.querySelector("#whitelist").textContent),
+        dropdown : {
+          enabled: 1, // suggest tags after a single character input
+        } // map tags
+      });
+      tagify.on("add", onAdd);
+      tagify.on("remove", onRemove);
+      // add a class to Tagify's input element
+      tagify.DOM.input.classList.add('form-control');
+
+    });
+  </script>
+</div>
+
+<script type="application/javascript" th:inline="javascript" th:fragment="ajax-csrf-header">
+  $(function() {
+    var csrfToken = /*[[${_csrf.token}]]*/ 'null';
+    var csrfHeader = /*[[${_csrf.headerName}]]*/ 'null';
+    $(document).ajaxSend(function (e, xhr, options) {
+      xhr.setRequestHeader(csrfHeader, csrfToken);
+    });
+  });
+</script>
 
 <footer th:fragment="footer">
   <div class="row justify-content-center">

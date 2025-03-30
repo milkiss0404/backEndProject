@@ -1,27 +1,29 @@
 package com.study.project.settings;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.study.project.account.AccountService;
 import com.study.project.account.CurrentAccount;
 import com.study.project.domain.Account;
-import com.study.project.settings.form.NicknameForm;
-import com.study.project.settings.form.Notifications;
-import com.study.project.settings.form.PasswordForm;
-import com.study.project.settings.form.Profile;
+import com.study.project.domain.Tag;
+import com.study.project.settings.form.*;
 import com.study.project.settings.validator.NicknameValidator;
 import com.study.project.settings.validator.PasswordFormValidator;
+import com.study.project.tag.TagRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -37,10 +39,11 @@ public class SettingsController {
     public void initBinderNickname(WebDataBinder webDataBinder) {
         webDataBinder.addValidators(nicknameValidator);
     }
+
     private final NicknameValidator nicknameValidator;
     private final AccountService accountService;
     private final ModelMapper modelMapper;
-
+    private final TagRepository tagRepository;
     @GetMapping("/profile")
     public String profileUpdateForm(@CurrentAccount Account account, Model model) {
         model.addAttribute(account);
@@ -121,5 +124,28 @@ public class SettingsController {
         attributes.addFlashAttribute("message", "닉네임을 수정했습니다.");
         return "redirect:/settings/account";
     }
+
+    @GetMapping("/tags")
+    public String updatgeTags(@CurrentAccount Account account, Model model) throws JsonProcessingException {
+        List<String> tagList = List.of();
+        model.addAttribute("whitelist", new ObjectMapper().writeValueAsString(tagList));
+        model.addAttribute(account);
+        return "settings/tags";
+    }
+
+    @PostMapping("/tags/add")
+    @ResponseBody
+    public ResponseEntity addTag(@CurrentAccount Account account, @RequestBody TagFoam tagFoam) {
+        String title = tagFoam.getTagTitle();
+        Tag tag = tagRepository.findByTitle(title);
+        if (tag == null) {
+            tag = tagRepository.save(Tag.builder().
+                            title(tagFoam.getTagTitle()).build());
+        }
+        accountService.addTag(account, tag);
+
+        return ResponseEntity.ok().build();
+    }
+
 }
 

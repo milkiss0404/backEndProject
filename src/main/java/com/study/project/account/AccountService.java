@@ -2,6 +2,7 @@ package com.study.project.account;
 
 import com.study.project.account.form.SignUpForm;
 import com.study.project.domain.Account;
+import com.study.project.domain.Tag;
 import com.study.project.settings.form.Notifications;
 import com.study.project.settings.form.Profile;
 import jakarta.validation.Valid;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -110,5 +112,13 @@ public class AccountService implements UserDetailsService {
         account.setNickname(nickname);
         accountRepository.save(account);
         login(account);
+    }
+
+
+    public void addTag(Account account, Tag tag) {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        //Optional의 ifPresent 메서드는 Optional 객체에 값이 존재할 때만
+        // 특정 동작을 수행할 수 있도록 해주는 메서드입니다.
+        byId.ifPresent(a->a.getTags().add(tag));
     }
 }
