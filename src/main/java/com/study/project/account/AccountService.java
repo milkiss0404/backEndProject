@@ -3,13 +3,12 @@ package com.study.project.account;
 import com.study.project.account.form.SignUpForm;
 import com.study.project.domain.Account;
 import com.study.project.domain.Tag;
+import com.study.project.domain.Zone;
 import com.study.project.settings.form.Notifications;
 import com.study.project.settings.form.Profile;
+import com.study.project.zone.ZoneRepository;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.validator.constraints.Length;
 import org.modelmapper.ModelMapper;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -35,6 +34,7 @@ public class AccountService implements UserDetailsService {
     private final JavaMailSender javaMailSender;
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
+    private final ZoneRepository zoneRepository;
 
     public Account processNewAccount(@Valid SignUpForm signUpForm) {
         Account newAccount = saveNewAccount(signUpForm); //여기까지 영속성 컨텍스트랑 붙어있음
@@ -130,8 +130,18 @@ public class AccountService implements UserDetailsService {
 
     }
 
-    public void getZones(Account account) {
+    public Set<Zone> getZones(Account account) {
         Optional<Account> byId = accountRepository.findById(account.getId());
-//        byId.get().get
+        return byId.orElseThrow().getZones();
+    }
+
+    public void addZone(Account account, Zone zone) {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        byId.ifPresent(a -> a.getZones().add(zone));
+    }
+
+    public void removeZone(Account account, Zone zone) {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        byId.ifPresent(a -> a.getZones().remove(zone));
     }
 }
