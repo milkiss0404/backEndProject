@@ -13,6 +13,7 @@ import com.study.project.settings.validator.PasswordFormValidator;
 import com.study.project.tag.TagRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -24,6 +25,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -44,6 +47,7 @@ public class SettingsController {
     private final AccountService accountService;
     private final ModelMapper modelMapper;
     private final TagRepository tagRepository;
+
     @GetMapping("/profile")
     public String profileUpdateForm(@CurrentAccount Account account, Model model) {
         model.addAttribute(account);
@@ -127,7 +131,9 @@ public class SettingsController {
 
     @GetMapping("/tags")
     public String updatgeTags(@CurrentAccount Account account, Model model) throws JsonProcessingException {
-        List<String> tagList = List.of();
+        Set<Tag> tags = accountService.getTags(account);
+        model.addAttribute("tags", tags.stream().map(Tag::getTitle).collect(Collectors.toList()));
+        List<String> tagList = List.of("java", "jpa");
         model.addAttribute("whitelist", new ObjectMapper().writeValueAsString(tagList));
         model.addAttribute(account);
         return "settings/tags";
@@ -140,12 +146,31 @@ public class SettingsController {
         Tag tag = tagRepository.findByTitle(title);
         if (tag == null) {
             tag = tagRepository.save(Tag.builder().
-                            title(tagFoam.getTagTitle()).build());
+                    title(tagFoam.getTagTitle()).build());
         }
         accountService.addTag(account, tag);
 
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/tags/remove")
+    @ResponseBody
+    public ResponseEntity removeTag(@CurrentAccount Account account, @RequestBody TagFoam tagFoam) {
+        String tagTitle = tagFoam.getTagTitle();
+        Tag tag = tagRepository.findByTitle(tagTitle);
+        if (tag == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        accountService.removeTag(account, tag);
+        return ResponseEntity.ok().build();
+    }
+
+
+    @GetMapping("/zones")
+    public String updateZonesForm(@CurrentAccount Account account, Model model) {
+        model.addAttribute(account);
+        accountService.getZones(account);
+    }
 }
 
