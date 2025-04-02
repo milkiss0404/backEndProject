@@ -25,7 +25,7 @@ public class Account {
 
     private String password;
 
-    private boolean emailVerified =true; //이메일 계정이 인증계정인지 아닌지 판별
+    private boolean emailVerified; //이메일 계정이 인증계정인지 아닌지 판별
 
     private String emailCheckToken; //이메일 검증한 토큰값?
 

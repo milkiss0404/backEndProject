@@ -4,14 +4,20 @@ import com.study.project.account.form.SignUpForm;
 import com.study.project.domain.Account;
 import com.study.project.domain.Tag;
 import com.study.project.domain.Zone;
+import com.study.project.mail.EmailMessage;
+import com.study.project.mail.EmailService;
 import com.study.project.settings.form.Notifications;
 import com.study.project.settings.form.Profile;
 import com.study.project.zone.ZoneRepository;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -35,6 +41,7 @@ public class AccountService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
     private final ZoneRepository zoneRepository;
+    private final EmailService emailService;
 
     public Account processNewAccount(@Valid SignUpForm signUpForm) {
         Account newAccount = saveNewAccount(signUpForm); //여기까지 영속성 컨텍스트랑 붙어있음
@@ -51,12 +58,15 @@ public class AccountService implements UserDetailsService {
         return accountRepository.save(account);
     }
 
-    public void sendSignUpConfirmEmail(Account newAccount) {
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(newAccount.getEmail());
-        mailMessage.setSubject("회원 가입인증");
-        mailMessage.setText("/check-email-token?token="+ newAccount.getEmailCheckToken() + "&email="+ newAccount.getEmail());
-        javaMailSender.send(mailMessage);
+    public void sendSignUpConfirmEmail(Account account) {
+//        EmailMessage emailMessage = EmailMessage.builder()
+//                .to(account.getEmail())
+//                .subject("회원가입인증")
+//                .message("/check-email-token?=token=" + account.getEmailCheckToken() + "&email=" + account.getEmail())
+//                        .build();
+//
+//        emailService.sendEmail(emailMessage);
+
     }
     @Transactional(readOnly = true)
     public void login(Account account) {

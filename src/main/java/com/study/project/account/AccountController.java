@@ -3,6 +3,7 @@ package com.study.project.account;
 import com.study.project.account.form.SignUpForm;
 import com.study.project.account.validator.SignUpFormValidator;
 import com.study.project.domain.Account;
+import com.study.project.mail.ConsoleEmailService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,7 @@ public class AccountController {
     private final SignUpFormValidator signUpFormValidator;
     private final AccountService accountService;
     private final AccountRepository accountRepository;
+    private final ConsoleEmailService consoleEmailService;
 
     //해당 Controllerm")이 컨트롤러로 들어올로 들어오는 요청에 대해 추가적인 설정을 하고 싶을 때 사용할 수 있다. ("signUpFor떄마다 검증
     // 또한 모든 요청 전에 InitBinder를 선언한 메소드가 실행된다.
