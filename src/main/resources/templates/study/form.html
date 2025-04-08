@@ -1,12 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
 <head th:replace="fragments.html :: head"></head>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-
 <body class="bg-light">
 <div th:replace="fragments.html :: main-nav"></div>
-
 <div class="container">
   <div class="py-5 text-center">
     <h2>스터디 개설</h2>
@@ -47,12 +43,12 @@
         <small class="form-text text-danger" th:if="${#fields.hasErrors('shortDescription')}" th:errors="*{shortDescription}">ShortDescription Error</small>
       </div>
 
-      <div class="mb-3">
-        <label for="fullDescription" class="form-label">상세 소개</label>
-        <textarea id="fullDescription" th:field="*{fullDescription}" class="editor form-control"
+      <div class="form-group">
+        <label for="fullDescription">상세 소개</label>
+        <textarea id="fullDescription" type="textarea" th:field="*{fullDescription}" class="editor form-control"
                   placeholder="스터디를 자세히 설명해 주세요." aria-describedby="fullDescriptionHelp" required></textarea>
         <small id="fullDescriptionHelp" class="form-text text-muted">
-          스터디의 목표, 일정, 진행 방식, 사용할 교재 또는 인터넷 강좌 등을 자세히 적어 주세요.
+          스터디의 목표, 일정, 진행 방식, 사용할 교재 또는 인터넷 강좌 그리고 모집중인 스터디원 등 스터디에 대해 자세히 적어 주세요.
         </small>
         <small class="invalid-feedback">상세 소개를 입력하세요.</small>
         <small class="form-text text-danger" th:if="${#fields.hasErrors('fullDescription')}" th:errors="*{fullDescription}">FullDescription Error</small>
@@ -65,14 +61,9 @@
   </div>
 
   <div th:replace="fragments.html :: footer"></div>
-
-
-
 </div>
 <script th:insert="fragments.html :: tooltip"></script>
 <script th:insert="fragments.html :: form-validation"></script>
-<!--<script th:insert="fragments.html :: editor-script"></script>-->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-bs5.min.js"></script>
+<script th:insert="fragments.html :: editor-script"></script>
 </body>
 </html>
